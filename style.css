@@ -71,6 +71,42 @@ ul {
     font-size: 18px;
 }
 
+input[type="checkbox"] {
+    position: absolute;
+    transform: scale(0);
+}
+
+input[type="checkbox"]:checked + .checkbox-label::after {
+    opacity: 1;
+}
+
+.checkbox-label::before {
+    content: '';
+    height: 18px;
+    width: 18px;
+    border: 2px solid #6a1979;
+    border-radius: 3px;
+    position: absolute;
+    left: 18px;
+    top: 11px;
+}
+
+.checkbox-label::after {
+    content: '';
+    position: absolute;
+    left: 25px;
+    top: 11px;
+    width: 7px;
+    height: 13px;
+    border: 2px solid;
+    border-color: transparent #6a1979 #6a1979 transparent;
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: .3s opacity;
+
+}
+
+
 .btn {
     min-width: 120px;
     border-radius: 4px;
@@ -106,7 +142,9 @@ ul {
 
 .task-item {
     list-style: none;
-    padding: 10px 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 50px;
     margin: 0;
     border-bottom: 1px solid #6a1979;
     position: relative;
@@ -123,6 +161,6 @@ ul {
     line-height: 0;
     position: absolute;
     right: 10px;
-    top: 20px;
+    top: 18px;
     cursor: pointer;
 }

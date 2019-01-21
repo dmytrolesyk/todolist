@@ -45,6 +45,17 @@ function addTask(e) {
         deleteItem.classList.add('delete-item-icon');
         li.appendChild(deleteItem);
 
+        // Create checkbox, add class, append it to the li element
+        const checkBox = document.createElement('input');
+        checkBox.type = 'checkbox';
+        checkBox.id = 'task-item-complete';
+        li.appendChild(checkBox);
+
+        const checkBoxLabel = document.createElement('label');
+        checkBoxLabel.setAttribute('for','task-item-complete');
+        checkBoxLabel.classList.add('checkbox-label');
+        li.appendChild(checkBoxLabel);
+
         // append li element to the ul with tasks
         taskCollection.appendChild(li);
 
@@ -56,7 +67,7 @@ function addTask(e) {
 }
 
 function deleteTask(e) {
-    if(e.target.parentElement.classList.contains('task-item')) {
+    if(e.target.classList.contains('delete-item-icon')) {
         e.target.parentElement.remove();
         if(!taskCollection.children.length) {
             taskCollection.style.display = 'none';
