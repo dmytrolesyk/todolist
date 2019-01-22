@@ -28,12 +28,42 @@ class DataManager {
         return id;
     }
 
-    addTaskToStorage(caption, completed) {
+    addTaskToData(caption, completed) {
         const id = this.generateId();
         const newTask = new Task(id, caption, completed);
         this.data.push(newTask);
+    }
 
+    addDataToStorage() {
         localStorage.setItem('tasks', JSON.stringify(this.data));
+    }
 
+    removeDataItem(index) {
+        this.data.splice(index, 1);
+    }
+
+    clearData() {
+        this.data = [];
+    }
+
+    getDataItem(elementId) {
+        let dataItem;
+        const id = parseInt(elementId.split('-')[1]);
+        this.data.forEach(function(item) {
+            if(item.id === id) {
+                dataItem = item;
+            }
+        });
+        return dataItem;
+    }
+
+    getIndexById(id) {
+        let index;
+        dataManager.data.forEach(function(dataItem, ind){
+            if(dataItem.id === id) {
+                index = ind;
+            }
+        });
+        return index;
     }
 }

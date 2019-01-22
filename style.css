@@ -164,3 +164,7 @@ input[type="checkbox"]:checked + .checkbox-label::after {
     top: 18px;
     cursor: pointer;
 }
+
+.completed-task {
+    text-decoration: line-through;
+}
