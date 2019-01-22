@@ -48,9 +48,9 @@ class DataManager {
 
     getDataItem(elementId) {
         let dataItem;
-        const id = parseInt(elementId.split('-')[1]);
         this.data.forEach(function(item) {
-            if(item.id === id) {
+            if(item.id === elementId) {
+                console.log(item);
                 dataItem = item;
             }
         });

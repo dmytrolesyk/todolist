@@ -11,6 +11,19 @@ loadEventListeners();
 const dataManager = new DataManager();
 dataManager.init();
 
+// class TodoList {
+
+//     constructor(domNode) {
+//         this.render()
+//     }
+
+//     render() {
+
+//     }
+
+// }
+
+
 function loadEventListeners() {
 
     // Load tasks from Local Storage when the DOM is loaded
@@ -20,7 +33,7 @@ function loadEventListeners() {
     taskInputForm.addEventListener('submit', addTask);
 
     // Delete task event listener
-    taskCollection.addEventListener('click', deleteTask);
+    //taskCollection.addEventListener('click', deleteTask);
 
     // Clear all tasks event listener
     clearTasks.addEventListener('click', clearAllTasks);
@@ -29,21 +42,24 @@ function loadEventListeners() {
     tasksFilter.addEventListener('keyup', filterTasks);
 
     // Checkbox click event listener
-    taskCollection.addEventListener('click', checkBoxHandler)
+    //taskCollection.addEventListener('click', checkBoxHandler)
 
     // Add data to Local Storage when the browser window is unloaded or closed
     window.addEventListener('unload', addToStorage);
 }
 
 function loadTasks() {
-    if(dataManager.data.length !== 0) {
+    if(dataManager.data.length) {
         taskCollection.style.display = 'block';
-        dataManager.data.forEach(function(task){
+        dataManager.data.forEach(task => {
             // create new li element for the task item
             const li = document.createElement('li');
-            li.id = `task-${task.id}`;
+            const elementId = task.id;
             li.classList.add('task-item');
-            li.textContent = task.caption; 
+            li.textContent = task.caption;
+            
+            li.addEventListener('click', (e) => deleteTask(e, elementId));
+            li.addEventListener('click', (e) => checkBoxHandler(e, elementId));
 
 
             // Create delete task item button, add class, append it to the li element
@@ -85,11 +101,14 @@ function addTask(e) {
         dataManager.addTaskToData(taskInput.value, false);
 
         taskCollection.style.display = 'block';
+
         // create new li element for the task item
         const li = document.createElement('li');
-        li.id = `task-${dataManager.data[dataManager.data.length-1].id}`;
         li.classList.add('task-item');
         li.textContent = taskInput.value; 
+        const elementId = dataManager.data[dataManager.data.length-1].id;
+        li.addEventListener('click', (e) => deleteTask(e, elementId));
+        li.addEventListener('click', (e) => checkBoxHandler(e, elementId));
 
         // Create delete task item button, add class, append it to the li element
         const deleteItem = document.createElement('span');
@@ -100,7 +119,7 @@ function addTask(e) {
         // Create checkbox, add class, append it to the li element
         const checkBox = document.createElement('input');
         checkBox.type = 'checkbox';
-        checkBox.id = `checkbox-${dataManager.data[dataManager.data.length-1].id}`;
+        checkBox.id = `checkbox-${elementId}`;
         li.appendChild(checkBox);
 
         const checkBoxLabel = document.createElement('label');
@@ -115,9 +134,9 @@ function addTask(e) {
     }
 }
 
-function deleteTask(e) {
+function deleteTask(e, id) {
     if(e.target.classList.contains('delete-item-icon')) {
-        dataManager.removeDataItem(dataManager.getIndexById(dataManager.getDataItem(e.target.parentElement.id).id));
+        dataManager.removeDataItem(dataManager.getIndexById(id));
         e.target.parentElement.remove();
         if(!taskCollection.children.length) {
             taskCollection.style.display = 'none';
@@ -137,7 +156,7 @@ function clearAllTasks() {
 function filterTasks(e) {
     const inputtedText = e.target.value.toLowerCase();
 
-	document.querySelectorAll('.task-item').forEach(function(task){
+	document.querySelectorAll('.task-item').forEach(task => {
 		const taskItemTextContent = task.textContent;
 
 		if(taskItemTextContent.toLowerCase().indexOf(inputtedText) != -1) {
@@ -152,9 +171,9 @@ function addToStorage() {
     dataManager.addDataToStorage();
 }
 
-function checkBoxHandler(e) {
+function checkBoxHandler(e, id) {
     if(e.target.classList.contains('checkbox-label')) {
-        const dataItem = dataManager.getDataItem(e.target.parentElement.id);
+        const dataItem = dataManager.getDataItem(id);
         if(e.target.parentElement.classList.contains('completed-task')) {
             dataItem.completed = false;
             e.target.parentElement.classList.remove('completed-task')
