@@ -9,7 +9,6 @@ const taskCollection = document.getElementById('task-collection');
 loadEventListeners();
 
 const dataManager = new DataManager();
-dataManager.init();
 
 // class TodoList {
 
@@ -32,17 +31,11 @@ function loadEventListeners() {
     // Add task event listener
     taskInputForm.addEventListener('submit', addTask);
 
-    // Delete task event listener
-    //taskCollection.addEventListener('click', deleteTask);
-
     // Clear all tasks event listener
     clearTasks.addEventListener('click', clearAllTasks);
 
     // Filter tasks event listener
     tasksFilter.addEventListener('keyup', filterTasks);
-
-    // Checkbox click event listener
-    //taskCollection.addEventListener('click', checkBoxHandler)
 
     // Add data to Local Storage when the browser window is unloaded or closed
     window.addEventListener('unload', addToStorage);
@@ -67,6 +60,12 @@ function loadTasks() {
             deleteItem.innerHTML = `&times`;
             deleteItem.classList.add('delete-item-icon');
             li.appendChild(deleteItem);
+
+            // Create edit button, append it to the li element
+            const editButton = document.createElement('a');
+            editButton.innerHTML = `<span class="icon-pencil"></span>`;
+            editButton.classList.add('edit-button-icon');
+            li.appendChild(editButton);
 
             // Create checkbox, add class, append it to the li element
             const checkBox = document.createElement('input');
@@ -115,6 +114,13 @@ function addTask(e) {
         deleteItem.innerHTML = `&times`;
         deleteItem.classList.add('delete-item-icon');
         li.appendChild(deleteItem);
+
+        // Create edit button, append it to the li element
+        const editButton = document.createElement('a');
+        editButton.innerHTML = `<span class="icon-pencil"></span>`;
+        editButton.classList.add('edit-button-icon');
+        li.appendChild(editButton);
+
 
         // Create checkbox, add class, append it to the li element
         const checkBox = document.createElement('input');

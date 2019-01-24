@@ -8,14 +8,7 @@ class Task {
 
 class DataManager {
     constructor() {
-        this.data = null;
-    }
-    init() {
-        if(!localStorage.getItem('tasks')) {
-            this.data = [];
-        } else {
-            this.data = JSON.parse(localStorage.getItem('tasks'));
-        }
+        this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
     }
 
     generateId() {
