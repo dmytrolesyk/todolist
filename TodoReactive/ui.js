@@ -177,18 +177,19 @@ class Tasks {
         }
 
         if(!dataManager.getData().length) return;
-
+    
         const taskCollection = document.createElement('ul');
         taskCollection.classList.add('task-collection');
         node.appendChild(taskCollection);
 
+        this.dataManager.subscribe('renderTasks', this.render, [node, setEditState]);
+
         this.dataManager.getData().forEach(task => {
-    
+            
             const li = document.createElement('li');
             const elementId = task.id;
             li.classList.add('task-item');
             li.textContent = task.caption;
-            
 
             const deleteItem = document.createElement('span');
             deleteItem.innerHTML = `&times`;
@@ -207,7 +208,10 @@ class Tasks {
             const checkBox = document.createElement('input');
             checkBox.type = 'checkbox';
             checkBox.id = `checkbox-${elementId}`;
-            checkBox.addEventListener('click', ()=> this.checkBoxHandler(elementId));
+            checkBox.addEventListener('click', ()=> {
+        
+                this.checkBoxHandler(elementId);
+            });
             li.appendChild(checkBox);
 
             const checkBoxLabel = document.createElement('label');
@@ -219,7 +223,7 @@ class Tasks {
                 li.classList.add('completed-task');
                 checkBox.setAttribute('checked', true);
             }
-
+       
             taskCollection.appendChild(li);
         });
     }
@@ -230,6 +234,7 @@ class Tasks {
     }
 
     checkBoxHandler(id) {
+
         this.dataManager.checkBoxToggler(id);
         
     }

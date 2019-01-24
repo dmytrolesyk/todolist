@@ -22,13 +22,12 @@ class DataManager {
     }
 
     subscribe(topic, callback, pars) {
-        if(!this.changeListeners.hasOwnProperty(topic)) {
-            this.changeListeners[topic] = {};
+
+        this.changeListeners[topic] = {};
             this.changeListeners[topic].listener = callback;
             if(typeof pars !=='undefined') {
                 this.changeListeners[topic].parameters = [...pars];
             }
-        }
     }
 
     publish(topic) {
@@ -72,8 +71,7 @@ class DataManager {
     }
 
     checkBoxToggler(id) {
-
-        
+       
         const task = this.getDataItem(id);
         if(task.completed) {
             task.completed = false;

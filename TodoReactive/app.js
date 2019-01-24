@@ -15,8 +15,3 @@ const tasks = new Tasks(dataManager);
 const app = new App(rootNode, tasks, dataManager);
 
 app.render();
-
-const tasksNode = document.getElementById('tasksNode');
-
-dataManager.subscribe('renderTasks', tasks.render, [tasksNode, app.setEditState]);
-dataManager.subscribe('renderApp', app.render);
