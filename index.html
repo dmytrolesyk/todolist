@@ -6,42 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <title>Todo</title>
+    <title>Super Reactive ToDo List</title>
 </head>
 <body>
-    <div id="wrapper">
-        <div class="container">
-            <div class="row">
-                <div class="column">
-                    <div class="card">
-                        <div class="add-tasks-section">
-                            <div class="title-holder">
-                                <h2>Add Tasks</h2>
-                            </div>
-                            <form id="task-input-form">
-                                <div class="input-holder">
-                                    <input type="text" id="input-task" class="input" placeholder="Input your Task">
-                                </div>
-                                <input type="submit" value="Add Task" class="btn btn-violet">
-                            </form>
-                        </div>
-                        <div class="manage-tasks-section">
-                            <div class="title-holder">
-                                <h2>Manage Tasks</h2>
-                            </div>
-                            <div class="input-holder">
-                                <input type="text" class="input" id="filter-tasks" placeholder="Filter Tasks">
-                            </div>
-                            <ul id="task-collection"></ul>
-                            <button type="button" id="clear-tasks" class="btn btn-black clear-tasks">Clear Tasks</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     
+    <div id="root"></div>
+
     <script src="dataManager.js"></script>
+    <script src="ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

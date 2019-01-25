@@ -12,6 +12,7 @@ class App {
         this.filterTasks = this.filterTasks.bind(this);
         this.clearTasks = this.clearTasks.bind(this);
         this.addTask = this.addTask.bind(this);
+        document.addEventListener('DOMContentLoaded', this.render);
     }
 
     render() {
@@ -21,6 +22,8 @@ class App {
                 this.node.firstChild.remove();
             }
         }
+
+        this.dataManager.subscribe('renderApp',app.render);
         
         const wrapper = document.createElement('div');
         wrapper.classList.add('wrapper');
@@ -55,7 +58,11 @@ class App {
         addTaskSectionTitleHolder.appendChild(addTaskSectionTitleHolderH2);
 
         const form = document.createElement('form');
-        form.addEventListener('submit', (e) => this.addTask(e, textInput.value))
+        if (this.state.editState) {
+            form.addEventListener('submit', e => this.updateTask(e, textInput.value));
+        } else {
+            form.addEventListener('submit', e => this.addTask(e, textInput))
+        }
         addTaskSection.appendChild(form);
 
         const addTaskSectionInputHolder = document.createElement('div');
@@ -63,7 +70,6 @@ class App {
         form.appendChild(addTaskSectionInputHolder);
 
         const textInput = document.createElement('input');
-        //textInput.id = 'input-task'; the same, don't need ids anymore
         textInput.setAttribute('type', 'text');
         textInput.setAttribute('placeholder', 'Input your Task');
         textInput.classList.add('input');
@@ -101,7 +107,6 @@ class App {
         manageTaskSection.appendChild(manageTaskSectionInputHolder);
 
         const filterInput = document.createElement('input');
-        //filterInput.id = 'filter-tasks'; the same, don't need ids anymore
         filterInput.setAttribute('type', 'text');
         filterInput.setAttribute('placeholder', 'Filter Tasks');
         filterInput.classList.add('input');
@@ -113,7 +118,6 @@ class App {
         manageTaskSection.appendChild(tasksNode);
 
         const clearTasksButton = document.createElement('button');
-        //clearTasksButton.id = 'clear-tasks'; //don't need ids 
         clearTasksButton.setAttribute('type', 'button');
         clearTasksButton.className = 'btn btn-black clear-tasks';
         clearTasksButton.textContent = 'Clear Tasks';
@@ -144,19 +148,30 @@ class App {
         });
     }
 
-    addTask(e, caption) {
+    addTask(e, textInput) {
         e.preventDefault();
 
-        if(!caption) {
+        if(!textInput.value) {
             alert('You need to input some value!');
         } else {
             // Add task to the data structure and local storage
-            this.dataManager.addTaskToData(caption, false);
+            this.dataManager.addTaskToData(textInput.value, false);
+            textInput.value = '';
         }
     }
 
     clearTasks() {
+        this.state.editState = false;
+        this.state.currentTask = null;
         this.dataManager.clearData();
+    }
+
+    updateTask(e, caption) {
+        e.preventDefault();
+        this.state.currentTask.caption = caption;
+        this.state.editState = false;
+        this.state.currentTask = null;
+        this.render();
     }
 }
 
@@ -176,13 +191,14 @@ class Tasks {
             }
         }
 
+        this.dataManager.subscribe('renderTasks', this.render, [node, setEditState]);
+
         if(!dataManager.getData().length) return;
     
         const taskCollection = document.createElement('ul');
         taskCollection.classList.add('task-collection');
         node.appendChild(taskCollection);
 
-        this.dataManager.subscribe('renderTasks', this.render, [node, setEditState]);
 
         this.dataManager.getData().forEach(task => {
             
@@ -208,10 +224,7 @@ class Tasks {
             const checkBox = document.createElement('input');
             checkBox.type = 'checkbox';
             checkBox.id = `checkbox-${elementId}`;
-            checkBox.addEventListener('click', ()=> {
-        
-                this.checkBoxHandler(elementId);
-            });
+            checkBox.addEventListener('click', ()=> this.checkBoxHandler(elementId));
             li.appendChild(checkBox);
 
             const checkBoxLabel = document.createElement('label');

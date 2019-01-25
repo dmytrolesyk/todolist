@@ -13,7 +13,7 @@ ul {
     padding: 0;
 }
 
-#wrapper {
+.wrapper {
     position: relative;
     width: 100%;
     overflow: hidden;
@@ -43,9 +43,10 @@ ul {
 
 .card {
     background-color: #fff;
-    opacity: 0.5;
+    opacity: 0.9;
     border-radius: 4px;
     margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .add-tasks-section, 
@@ -110,15 +111,16 @@ input[type="checkbox"]:checked + .checkbox-label::after {
 
 
 .btn {
-    min-width: 120px;
+    min-width: 200px;
     border-radius: 4px;
-    padding: 10px 50px;
+    padding: 10px 0 10px 0;
     text-align: center;
     outline: none;
     border-width: 0;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
+    opacity: 1;
 }
 
 .btn:hover {
@@ -129,6 +131,10 @@ input[type="checkbox"]:checked + .checkbox-label::after {
     background-color: #6a1979;
 }
 
+.btn-green {
+    background-color: #00822b
+}
+
 .btn-black {
     background-color: #000;
 }
@@ -137,9 +143,9 @@ input[type="checkbox"]:checked + .checkbox-label::after {
     margin-top: 20px
 }
 
-#task-collection {
+.task-collection {
     border: 1px solid #6a1979;
-    display: none;
+    /* display: none; */
 }
 
 .task-item {
