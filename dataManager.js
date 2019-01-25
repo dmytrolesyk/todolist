@@ -6,9 +6,11 @@ class Task {
     }
 }
 
+// http://localhost:3002/
+
 class DataManager {
-    constructor() {
-        //this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
+    constructor(http) {
+        this.http = http;
         this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
         this.changeListeners = {};
         this.getDataItem = this.getDataItem.bind(this);
@@ -17,6 +19,13 @@ class DataManager {
         this.clearData = this.clearData.bind(this);
         this.addDataToStorage = this.addDataToStorage.bind(this);
         window.addEventListener('unload', this.addDataToStorage);
+    }
+
+
+    async getDataFromServer() {
+        this.http.get('http://localhost:3002/', )
+            .then(response => this.data = response)
+            .catch(err => console.log(err));
     }
 
     subscribe(topic, callback, pars) {
