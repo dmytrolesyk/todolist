@@ -8,34 +8,14 @@ class Task {
 
 class DataManager {
     constructor() {
-        //this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
         this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
-        this.changeListeners = {};
+        this.pubsub = new Pubsub();
         this.getDataItem = this.getDataItem.bind(this);
-        this.subscribe = this.subscribe.bind(this);
-        this.publish = this.publish.bind(this);
         this.clearData = this.clearData.bind(this);
         this.addDataToStorage = this.addDataToStorage.bind(this);
         window.addEventListener('unload', this.addDataToStorage);
     }
 
-    subscribe(topic, callback, pars) {
-
-        this.changeListeners[topic] = {};
-            this.changeListeners[topic].listener = callback;
-            if(typeof pars !=='undefined') {
-                this.changeListeners[topic].parameters = [...pars];
-            }
-    }
-
-    publish(topic) {
-		if(typeof this.changeListeners[topic].parameters !== 'undefined') {
-			this.changeListeners[topic].listener(...this.changeListeners[topic].parameters);
-		} else {
-			this.changeListeners[topic].listener();
-		}
-	}
- 
     getData() {
         return this.data;
     }
@@ -54,7 +34,7 @@ class DataManager {
         const id = this.generateId();
         const newTask = new Task(id, caption, completed);
         this.data.push(newTask);
-        this.publish('renderTasks');
+        this.pubsub.publish('taskAdded', newTask);
     }
 
     addDataToStorage() {
@@ -63,24 +43,29 @@ class DataManager {
 
     removeDataItem(index) {
         
-        this.data.splice(index, 1);
-        this.publish('renderTasks');
+        const removedItem = this.data.splice(index, 1)[0];
+        this.pubsub.publish('removedTask', removedItem);
+    }
+
+    updateTask(input, itemToUpdate) {
+        itemToUpdate.caption = input;
+        this.pubsub.publish('taskUpdated', itemToUpdate);
     }
 
     checkBoxToggler(id) {
        
-        const task = this.getDataItem(id);
-        if(task.completed) {
-            task.completed = false;
+        const checkedItem = this.getDataItem(id);
+        if(checkedItem.completed) {
+            checkedItem.completed = false;
         } else {
-            task.completed = true;
+            checkedItem.completed = true;
         }
-        this.publish('renderTasks');
+        this.pubsub.publish('checkBoxToggled', checkedItem);
     }
 
     clearData() {
         this.data = [];
-        this.publish('renderApp');
+        this.pubsub.publish('tasksCleared');
     }
 
     getDataItem(elementId) {
@@ -95,7 +80,7 @@ class DataManager {
 
     getIndexById(id) {
         let index;
-        dataManager.data.forEach(function(dataItem, ind){
+        this.data.forEach(function(dataItem, ind){
             if(dataItem.id === id) {
                 index = ind;
             }

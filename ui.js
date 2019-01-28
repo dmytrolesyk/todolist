@@ -1,17 +1,11 @@
 class App {
-    constructor(node, tasks, dataManager) {
-        this.state = {
-            editState: false,
-            currentTask: null
-        };
-        this.dataManager = dataManager;
+    constructor(node) {
+        this.dataManager = new DataManager();
         this.node = node;
-        this.tasks = tasks;
         this.render = this.render.bind(this);
-        this.setEditState = this.setEditState.bind(this);
+        this.editState = false;
+        this.currentTask = null;
         this.filterTasks = this.filterTasks.bind(this);
-        this.clearTasks = this.clearTasks.bind(this);
-        this.addTask = this.addTask.bind(this);
         document.addEventListener('DOMContentLoaded', this.render);
     }
 
@@ -22,8 +16,6 @@ class App {
                 this.node.firstChild.remove();
             }
         }
-
-        this.dataManager.subscribe('renderApp',app.render);
         
         const wrapper = document.createElement('div');
         wrapper.classList.add('wrapper');
@@ -57,12 +49,30 @@ class App {
         addTaskSectionTitleHolderH2.textContent = 'Add Tasks'
         addTaskSectionTitleHolder.appendChild(addTaskSectionTitleHolderH2);
 
+        const addTaskHandler = function(e) {
+            e.preventDefault();
+
+            if(!textInput.value) {
+                alert('You need to input some value!');
+            } else {
+                this.dataManager.addTaskToData(textInput.value, false);
+                textInput.value = '';
+            }
+        }.bind(this);
+
+        const updateTaskHandler = function(e) {
+            e.preventDefault();
+            if(!textInput.value) {
+                alert('You need to input some value!');
+            } else {
+                const itemToUpdate = this.currentTask;
+                this.dataManager.updateTask(textInput.value, itemToUpdate);
+                removeEditState();
+            }
+        }.bind(this);
+
         const form = document.createElement('form');
-        if (this.state.editState) {
-            form.addEventListener('submit', e => this.updateTask(e, textInput.value));
-        } else {
-            form.addEventListener('submit', e => this.addTask(e, textInput))
-        }
+        form.addEventListener('submit', addTaskHandler);
         addTaskSection.appendChild(form);
 
         const addTaskSectionInputHolder = document.createElement('div');
@@ -73,35 +83,24 @@ class App {
         textInput.setAttribute('type', 'text');
         textInput.setAttribute('placeholder', 'Input your Task');
         textInput.classList.add('input');
-        if(this.state.editState) {
-            textInput.setAttribute('value', this.state.currentTask.caption);
-        }
         addTaskSectionInputHolder.appendChild(textInput);
 
         const submitInput = document.createElement('input');
         submitInput.setAttribute('type', 'submit');
         submitInput.classList.add('btn');
-        if(this.state.editState) {
-            submitInput.classList.add('btn-green');
-            submitInput.setAttribute('value', 'Update Task');
-        } else {
-            submitInput.classList.add('btn-violet');
-            submitInput.setAttribute('value', 'Add Task');
-        }
+        submitInput.classList.add('btn-violet');
+        submitInput.setAttribute('value', 'Add Task');
         form.appendChild(submitInput);
 
         const manageTaskSection = document.createElement('div');
         manageTaskSection.classList.add('manage-tasks-section');
         card.appendChild(manageTaskSection);
-
         const manageTaskSectionTitleHolder = document.createElement('div');
         manageTaskSectionTitleHolder.classList.add('title-holder');
         manageTaskSection.appendChild(manageTaskSectionTitleHolder);
-
         const manageTaskSectionH2 = document.createElement('h2');
         manageTaskSectionH2.textContent = 'Manage Tasks';
         manageTaskSectionTitleHolder.appendChild(manageTaskSectionH2);
-
         const manageTaskSectionInputHolder = document.createElement('div');
         manageTaskSectionInputHolder.classList.add('input-holder');
         manageTaskSection.appendChild(manageTaskSectionInputHolder);
@@ -121,17 +120,45 @@ class App {
         clearTasksButton.setAttribute('type', 'button');
         clearTasksButton.className = 'btn btn-black clear-tasks';
         clearTasksButton.textContent = 'Clear Tasks';
-        clearTasksButton.addEventListener('click', this.clearTasks);
+        clearTasksButton.addEventListener('click', () => {
+            this.dataManager.clearData();
+        });
         manageTaskSection.appendChild(clearTasksButton);
 
-        this.tasks.render(tasksNode, this.setEditState);
+        const setEditState = function(curTask) {
+            this.editState = true;
+            form.removeEventListener('submit', addTaskHandler);
+            form.addEventListener('submit', updateTaskHandler);
+            this.currentTask = curTask;
+            textInput.value = this.currentTask.caption;
+            submitInput.classList.remove('btn-violet');
+            submitInput.classList.add('btn-green');
+            submitInput.setAttribute('value', 'Update Task');
+            
+        }.bind(this);
 
-    }
+        const removeEditState = function(){
+            this.editState = false;
+            this.currentTask = null;
+            form.removeEventListener('submit', updateTaskHandler);
+            form.addEventListener('submit', addTaskHandler);
+            textInput.value = '';
+            submitInput.classList.remove('btn-green');
+            submitInput.classList.add('btn-violet');
+            submitInput.setAttribute('value', 'Add Task');
+        }.bind(this);
 
-    setEditState(curTask) {
-        this.state.editState = true;
-        this.state.currentTask = curTask;
-        this.render();
+        const clearTasksHelper = function() {
+            if(this.editState) {
+                removeEditState();
+            }
+        }.bind(this);    
+
+        this.dataManager.pubsub.subscribe('tasksCleared', clearTasksHelper);
+
+        this.tasks = new Tasks(tasksNode, setEditState, this.dataManager);
+        this.tasks.render();
+
     }
 
     filterTasks(e) {
@@ -147,108 +174,116 @@ class App {
             }
         });
     }
-
-    addTask(e, textInput) {
-        e.preventDefault();
-
-        if(!textInput.value) {
-            alert('You need to input some value!');
-        } else {
-            // Add task to the data structure and local storage
-            this.dataManager.addTaskToData(textInput.value, false);
-            textInput.value = '';
-        }
-    }
-
-    clearTasks() {
-        this.state.editState = false;
-        this.state.currentTask = null;
-        this.dataManager.clearData();
-    }
-
-    updateTask(e, caption) {
-        e.preventDefault();
-        this.state.currentTask.caption = caption;
-        this.state.editState = false;
-        this.state.currentTask = null;
-        this.render();
-    }
 }
 
 class Tasks {
-    constructor(dataManager) {
+    constructor(node, setEditState, dataManager) {
+        this.node = node;
+        this.setEditState = setEditState;
         this.dataManager = dataManager;
         this.render = this.render.bind(this);
-        this.deleteTask = this.deleteTask.bind(this);
-        this.checkBoxHandler = this.checkBoxHandler.bind(this);
     }
 
-    render(node, setEditState) {
+    render() {
 
-        if(node.children.length) {
-            while(node.firstChild) {
-                node.firstChild.remove();
+        if(this.node.children.length) {
+            while(this.node.firstChild) {
+                this.node.firstChild.remove();
             }
         }
 
-        this.dataManager.subscribe('renderTasks', this.render, [node, setEditState]);
+        this.taskCollection = document.createElement('ul');
+        this.node.appendChild(this.taskCollection);
 
-        if(!dataManager.getData().length) return;
+        this.dataManager.pubsub.subscribe('taskAdded', (addedItem) => {
+            if(!this.taskCollection.classList.contains('task-collection')) {
+                this.taskCollection.classList.add('task-collection');
+            }
+            this.createTaskItem(addedItem);
+        });
+
+
+        this.dataManager.pubsub.subscribe('tasksCleared', () => {
+            if(this.taskCollection.children.length) {
+                this.taskCollection.classList.remove('task-collection');
+                while(this.taskCollection.firstChild) {
+                    this.taskCollection.firstChild.remove();
+                }
+            }
+        });
+
+
+        if(!this.dataManager.getData().length) return;
     
-        const taskCollection = document.createElement('ul');
-        taskCollection.classList.add('task-collection');
-        node.appendChild(taskCollection);
+        this.taskCollection.classList.add('task-collection');
 
 
         this.dataManager.getData().forEach(task => {
-            
-            const li = document.createElement('li');
-            const elementId = task.id;
-            li.classList.add('task-item');
-            li.textContent = task.caption;
-
-            const deleteItem = document.createElement('span');
-            deleteItem.innerHTML = `&times`;
-            deleteItem.classList.add('delete-item-icon');
-            deleteItem.addEventListener('click', ()=> this.deleteTask(elementId));
-            li.appendChild(deleteItem);
-
-            const editButton = document.createElement('a');
-            editButton.innerHTML = `<span class="icon-pencil"></span>`;
-            editButton.classList.add('edit-button-icon');
-            editButton.addEventListener('click', function() {
-                setEditState(this.dataManager.getDataItem(elementId));
-            }.bind(this));
-            li.appendChild(editButton);
-
-            const checkBox = document.createElement('input');
-            checkBox.type = 'checkbox';
-            checkBox.id = `checkbox-${elementId}`;
-            checkBox.addEventListener('click', ()=> this.checkBoxHandler(elementId));
-            li.appendChild(checkBox);
-
-            const checkBoxLabel = document.createElement('label');
-            checkBoxLabel.setAttribute('for',checkBox.id);
-            checkBoxLabel.classList.add('checkbox-label');
-            li.appendChild(checkBoxLabel);
-
-            if(task.completed) {
-                li.classList.add('completed-task');
-                checkBox.setAttribute('checked', true);
-            }
-       
-            taskCollection.appendChild(li);
+            this.createTaskItem(task);
         });
     }
 
-    deleteTask(id) {
-        this.dataManager.removeDataItem(this.dataManager.getIndexById(id));
-        
-    }
+    createTaskItem(task) {
+        const li = document.createElement('li');
+        const elementId = task.id;
+        li.classList.add('task-item');
+        li.textContent = task.caption;
 
-    checkBoxHandler(id) {
+        const deleteItem = document.createElement('span');
+        deleteItem.innerHTML = `&times`;
+        deleteItem.classList.add('delete-item-icon');
+        deleteItem.addEventListener('click', ()=> this.dataManager.removeDataItem(this.dataManager.getIndexById(elementId)));
+        li.appendChild(deleteItem);
 
-        this.dataManager.checkBoxToggler(id);
-        
+        const editButton = document.createElement('a');
+        editButton.innerHTML = `<span class="icon-pencil"></span>`;
+        editButton.classList.add('edit-button-icon');
+        editButton.addEventListener('click', function() {
+            this.setEditState(this.dataManager.getDataItem(elementId));
+        }.bind(this));
+        li.appendChild(editButton);
+
+        const checkBox = document.createElement('input');
+        checkBox.type = 'checkbox';
+        checkBox.id = `checkbox-${elementId}`;
+        checkBox.addEventListener('click', ()=> this.dataManager.checkBoxToggler(elementId));
+        li.appendChild(checkBox);
+
+        const checkBoxLabel = document.createElement('label');
+        checkBoxLabel.setAttribute('for',checkBox.id);
+        checkBoxLabel.classList.add('checkbox-label');
+        li.appendChild(checkBoxLabel);
+        if(task.completed) {
+            li.classList.add('completed-task');
+            checkBox.setAttribute('checked', true);
+        }
+
+        this.dataManager.pubsub.subscribe('removedTask', (removedItem) => {
+            if(removedItem.id === elementId) {
+                li.remove();
+                if(!this.taskCollection.children.length) {
+                    this.taskCollection.classList.remove('task-collection');
+                }
+            }
+        });
+        this.dataManager.pubsub.subscribe('taskUpdated', (updatedItem) => {
+            if(updatedItem.id === elementId) {
+                li.childNodes[0].data = updatedItem.caption;
+            }
+        });
+        this.dataManager.pubsub.subscribe('checkBoxToggled', (checkedItem) => {
+            if(checkedItem.id === elementId) {
+                if(checkedItem.completed) {
+                    li.classList.add('completed-task');
+                    checkBox.setAttribute('checked', true);
+                } else {
+                    li.classList.remove('completed-task');
+                    checkBox.removeAttribute('checked');
+                }
+            }
+        });
+
+        this.taskCollection.appendChild(li);
+
     }
 }
