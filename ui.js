@@ -6,7 +6,7 @@ class App {
         };
         this.dataManager = dataManager;
         this.node = node;
-        this.tasks = null;
+        this.tasks = tasks;
         this.render = this.render.bind(this);
         this.setEditState = this.setEditState.bind(this);
         this.filterTasks = this.filterTasks.bind(this);
@@ -124,8 +124,7 @@ class App {
         clearTasksButton.addEventListener('click', this.clearTasks);
         manageTaskSection.appendChild(clearTasksButton);
 
-        this.tasks = new Tasks(node, this.setEditState, this.dataManager);
-        this.tasks.render();
+        this.tasks.render(tasksNode, this.setEditState);
 
     }
 
@@ -177,24 +176,22 @@ class App {
 }
 
 class Tasks {
-    constructor(node, setEditState, dataManager) {
+    constructor(dataManager) {
         this.dataManager = dataManager;
-        this.node = node;
-        this.setEditState = setEditState;
         this.render = this.render.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
         this.checkBoxHandler = this.checkBoxHandler.bind(this);
     }
 
-    render() {
+    render(node, setEditState) {
 
-        if(this.node.children.length) {
+        if(node.children.length) {
             while(node.firstChild) {
                 node.firstChild.remove();
             }
         }
 
-        this.dataManager.subscribe('renderTasks', this.render);
+        this.dataManager.subscribe('renderTasks', this.render, [node, setEditState]);
 
         if(!dataManager.getData().length) return;
     
@@ -241,13 +238,6 @@ class Tasks {
             }
        
             taskCollection.appendChild(li);
-
-
-            this.dataManager.subscribe('removedTask', (removedTaskId) => {
-                if (removedTaskId === task.id) {
-                    li.remove()
-                }
-            })
         });
     }
 

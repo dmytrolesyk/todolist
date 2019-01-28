@@ -19,17 +19,21 @@ class DataManager {
         window.addEventListener('unload', this.addDataToStorage);
     }
 
-    subscribe(topic, callback) {
+    subscribe(topic, callback, pars) {
 
         this.changeListeners[topic] = {};
-            this.changeListeners[topic].listener = callback; //listeners
+            this.changeListeners[topic].listener = callback;
             if(typeof pars !=='undefined') {
                 this.changeListeners[topic].parameters = [...pars];
             }
     }
 
-    publish(topic, params) {
-		this.changeListeners[topic].listeners.forEeach((listener) => listener(params));
+    publish(topic) {
+		if(typeof this.changeListeners[topic].parameters !== 'undefined') {
+			this.changeListeners[topic].listener(...this.changeListeners[topic].parameters);
+		} else {
+			this.changeListeners[topic].listener();
+		}
 	}
  
     getData() {
@@ -59,9 +63,8 @@ class DataManager {
 
     removeDataItem(index) {
         
-        const removedItem = this.data.splice(index, 1);
+        this.data.splice(index, 1);
         this.publish('renderTasks');
-        this.publish('removedTask', removedItem.id);
     }
 
     checkBoxToggler(id) {
