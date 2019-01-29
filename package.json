@@ -1,0 +1,28 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/js/server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmytrolesyk/todolist.git"
+  },
+  "author": "Dmytro Lesyk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmytrolesyk/todolist/issues"
+  },
+  "homepage": "https://github.com/dmytrolesyk/todolist#readme",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-body": "^4.0.7",
+    "koa-cors": "0.0.16",
+    "koa-router": "^7.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
