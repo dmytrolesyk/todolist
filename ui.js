@@ -129,6 +129,7 @@ class App {
             this.editState = true;
             form.removeEventListener('submit', addTaskHandler);
             form.addEventListener('submit', updateTaskHandler);
+            form.appendChild(cancelEditStateBtn);
             this.currentTask = curTask;
             textInput.value = this.currentTask.caption;
             submitInput.classList.remove('btn-violet');
@@ -142,11 +143,19 @@ class App {
             this.currentTask = null;
             form.removeEventListener('submit', updateTaskHandler);
             form.addEventListener('submit', addTaskHandler);
+            form.removeChild(cancelEditStateBtn);
             textInput.value = '';
             submitInput.classList.remove('btn-green');
             submitInput.classList.add('btn-violet');
             submitInput.setAttribute('value', 'Add Task');
         }.bind(this);
+
+        const cancelEditStateBtn = document.createElement('input');
+        cancelEditStateBtn.setAttribute('type', 'submit');
+        cancelEditStateBtn.classList.add('btn');
+        cancelEditStateBtn.classList.add('btn-red');
+        cancelEditStateBtn.setAttribute('value', 'Cancel');
+        cancelEditStateBtn.addEventListener('click', removeEditState);
 
         const clearTasksHelper = function() {
             if(this.editState) {
