@@ -39,7 +39,7 @@ class HTTP {
 					'Content-type': 'application/json'
 				}
 			});
-		const resData = await 'Resource deleted';
+		const resData = await response.json();
 		return resData;
 	}
 }

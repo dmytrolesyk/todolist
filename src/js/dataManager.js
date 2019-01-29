@@ -8,7 +8,9 @@ class Task {
 
 class DataManager {
     constructor() {
-        this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
+        // this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
+        this.data = [];
+        this.http = new HTTP();
         this.pubsub = new Pubsub();
         this.getDataItem = this.getDataItem.bind(this);
         this.clearData = this.clearData.bind(this);

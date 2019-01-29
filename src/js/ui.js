@@ -6,7 +6,7 @@ class App {
         this.editState = false;
         this.currentTask = null;
         this.filterTasks = this.filterTasks.bind(this);
-        document.addEventListener('DOMContentLoaded', this.render);
+        // document.addEventListener('DOMContentLoaded', this.render);
     }
 
     render() {
