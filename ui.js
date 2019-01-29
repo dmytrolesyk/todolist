@@ -181,7 +181,6 @@ class Tasks {
         this.node = node;
         this.setEditState = setEditState;
         this.dataManager = dataManager;
-        this.render = this.render.bind(this);
     }
 
     render() {
