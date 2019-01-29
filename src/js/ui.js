@@ -55,7 +55,7 @@ class App {
             if(!textInput.value) {
                 alert('You need to input some value!');
             } else {
-                this.dataManager.addTaskToData(textInput.value, false);
+                this.dataManager.addTaskToData(textInput.value);
                 textInput.value = '';
             }
         }.bind(this);
@@ -240,21 +240,21 @@ class Tasks {
         const deleteItem = document.createElement('span');
         deleteItem.innerHTML = `&times`;
         deleteItem.classList.add('delete-item-icon');
-        deleteItem.addEventListener('click', ()=> this.dataManager.removeDataItem(this.dataManager.getIndexById(elementId)));
+        deleteItem.addEventListener('click', ()=> this.dataManager.removeDataItem(elementId));
         li.appendChild(deleteItem);
 
         const editButton = document.createElement('a');
         editButton.innerHTML = `<span class="icon-pencil"></span>`;
         editButton.classList.add('edit-button-icon');
         editButton.addEventListener('click', function() {
-            this.setEditState(this.dataManager.getDataItem(elementId));
+            this.setEditState(task);
         }.bind(this));
         li.appendChild(editButton);
 
         const checkBox = document.createElement('input');
         checkBox.type = 'checkbox';
         checkBox.id = `checkbox-${elementId}`;
-        checkBox.addEventListener('click', ()=> this.dataManager.checkBoxToggler(elementId));
+        checkBox.addEventListener('click', ()=> this.dataManager.checkBoxToggler(task));
         li.appendChild(checkBox);
 
         const checkBoxLabel = document.createElement('label');

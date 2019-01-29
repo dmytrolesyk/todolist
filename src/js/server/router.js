@@ -1,6 +1,8 @@
 const Router = require('koa-router');
 const router = new Router();
 
+const {tasks, CreateTask, generateId} = require('./data.js');
+
 router.get('/tasks', async ctx => {
     ctx.body = tasks;
 });
@@ -17,9 +19,10 @@ router.get('/tasks/:id', async ctx => {
 });
 
 router.post('/tasks', async ctx => {
-    const newItem = ctx.request.body;
-    tasks.push(newItem);
-    ctx.body = newItem;
+    const caption = ctx.request.body.caption;
+    const newTask = new CreateTask(generateId(), caption, false);
+    tasks.push(newTask);
+    ctx.body = newTask;
 });
 
 router.delete('/tasks/:id', async ctx => {
@@ -35,7 +38,12 @@ router.delete('/tasks/:id', async ctx => {
     ctx.body = deletedItem;
 });
 
-router.put('/tasks/', async ctx => {
+router.delete('/tasks/clear', async ctx => {
+    tasks = [];
+    ctx.body = {msg: "data cleared"};
+});
+
+router.put('/tasks', async ctx => {
     const updatedItem = ctx.request.body;
     tasks.forEach((item, index) => {
         if(item.id === updatedItem.id) {

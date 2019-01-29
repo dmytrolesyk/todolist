@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', render);
 function render() {
     app.dataManager.http.get('http://localhost:3000/tasks')
         .then(tasks => {
-            app.dataManager.data.push(...tasks);
+            app.dataManager.initalData.push(...tasks);
             app.render();
         })
         .catch(err => console.log(err));

@@ -1,73 +1,50 @@
-class Task {
-    constructor(id, caption, completed) {
-        this.id = id;
-        this.caption = caption;
-        this.completed = completed;
-    }
-}
-
 class DataManager {
     constructor() {
-        // this.data = !localStorage.getItem('tasks') ? [] : JSON.parse(localStorage.getItem('tasks'));
-        this.data = [];
+        this.initalData = [];
         this.http = new HTTP();
         this.pubsub = new Pubsub();
         this.getDataItem = this.getDataItem.bind(this);
         this.clearData = this.clearData.bind(this);
-        this.addDataToStorage = this.addDataToStorage.bind(this);
-        window.addEventListener('unload', this.addDataToStorage);
     }
 
     getData() {
-        return this.data;
+        return this.initalData;
     }
 
-    generateId() {
-        let id;
-        if(this.data.length) {
-            id = this.data[this.data.length - 1].id + 1;
-        } else {
-            id = 0;
-        }
-        return id;
+
+    addTaskToData(caption) {
+        this.http.post('http://localhost:3000/tasks/', {caption: caption})
+            .then(addedTask => this.pubsub.publish('taskAdded', addedTask));
     }
 
-    addTaskToData(caption, completed) {
-        const id = this.generateId();
-        const newTask = new Task(id, caption, completed);
-        this.data.push(newTask);
-        this.pubsub.publish('taskAdded', newTask);
-    }
-
-    addDataToStorage() {
-        localStorage.setItem('tasks', JSON.stringify(this.data));
-    }
-
-    removeDataItem(index) {
+    removeDataItem(id) {
         
-        const removedItem = this.data.splice(index, 1)[0];
-        this.pubsub.publish('removedTask', removedItem);
+        this.http.delete(`http://localhost:3000/tasks/${id}`)
+            .then(removedItem => this.pubsub.publish('removedTask', removedItem[0]));
     }
 
-    updateTask(input, itemToUpdate) {
-        itemToUpdate.caption = input;
-        this.pubsub.publish('taskUpdated', itemToUpdate);
+    updateTask(input, taskObj) {
+        taskObj.caption = input;
+        this.http.put('http://localhost:3000/tasks/', taskObj)
+            .then(updatedItem => this.pubsub.publish('taskUpdated', updatedItem));
+
     }
 
-    checkBoxToggler(id) {
+    checkBoxToggler(taskObj) {
        
-        const checkedItem = this.getDataItem(id);
-        if(checkedItem.completed) {
-            checkedItem.completed = false;
+        if(taskObj.completed) {
+            taskObj.completed = false;
         } else {
-            checkedItem.completed = true;
+            taskObj.completed = true;
         }
-        this.pubsub.publish('checkBoxToggled', checkedItem);
+        this.http.put('http://localhost:3000/tasks/', taskObj)
+            .then(checkedItem => this.pubsub.publish('checkBoxToggled', checkedItem));
     }
 
-    clearData() {
-        this.data = [];
-        this.pubsub.publish('tasksCleared');
+    async clearData() {
+        const tasks = await this.http.get('http://localhost:3000/tasks')
+        await tasks.forEach((taskItem) => this.http.delete(`http://localhost:3000/tasks/${taskItem.id}`))
+        this.pubsub.publish('tasksCleared'); 
     }
 
     getDataItem(elementId) {
@@ -80,13 +57,4 @@ class DataManager {
         return dataItem;
     }
 
-    getIndexById(id) {
-        let index;
-        this.data.forEach(function(dataItem, ind){
-            if(dataItem.id === id) {
-                index = ind;
-            }
-        });
-        return index;
-    }
 }
