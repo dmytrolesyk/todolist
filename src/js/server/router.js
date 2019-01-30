@@ -24,7 +24,7 @@ router.post('/tasks', async (ctx) => {
 router.delete('/tasks/:id', async (ctx) => {
   const id = parseInt(ctx.params.id, 10)
   const index = tasks.findIndex(task => task.id === id)
-  const deletedItem = tasks.splice(index, 1)
+  const deletedItem = tasks.splice(index, 1)[0]
   ctx.body = deletedItem
 })
 

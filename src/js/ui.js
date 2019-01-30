@@ -16,6 +16,10 @@ class App {
     wrapper.classList.add('wrapper')
     this.node.appendChild(wrapper)
 
+    const notificationHolder = document.createElement('div')
+    notificationHolder.classList.add('notification-holder')
+    wrapper.appendChild(notificationHolder)
+
     const container = document.createElement('div')
     container.classList.add('container')
     wrapper.appendChild(container)
@@ -44,11 +48,24 @@ class App {
     addTaskSectionTitleHolderH2.textContent = 'Add Tasks'
     addTaskSectionTitleHolder.appendChild(addTaskSectionTitleHolderH2)
 
+    function showNotification(status, msg) {
+      const notification = document.createElement('div')
+      notification.textContent = msg
+      notification.classList.add('notification')
+      notification.classList.add(status === 'success' ? 'notification-success' : 'notification-failure')
+      if (notificationHolder.children.length) {
+        notificationHolder.insertBefore(notification, notificationHolder.firstElementChild)
+      } else {
+        notificationHolder.appendChild(notification)
+      }
+      setTimeout(() => notification.remove(), 5000)
+    }
+
     const textInput = document.createElement('input')
     const addTaskHandler = function updateTaskHandler(e) {
       e.preventDefault()
       if (!textInput.value) {
-        alert('You need to input some value!')
+        showNotification('failure', 'You need to input some value!')
       } else {
         this.dataManager.addTaskToData(textInput.value)
         textInput.value = ''
@@ -58,7 +75,7 @@ class App {
     const updateTaskHandler = function updateTaskHandler(e) {
       e.preventDefault()
       if (!textInput.value) {
-        alert('You need to input some value!')
+        showNotification('failure', 'You need to input some value!')
       } else {
         const itemToUpdate = this.currentTask
         this.dataManager.updateTask(textInput.value, itemToUpdate)
@@ -159,7 +176,13 @@ class App {
 
     this.dataManager.pubsub.subscribe('tasksCleared', clearTasksHelper)
 
-    this.tasks = new Tasks(tasksNode, setEditState, this.dataManager)
+    this.dataManager.pubsub.subscribe('Error', (e) => {
+      const status = 'failure'
+      const msg = `An error occurred: ${e}.`
+      showNotification(status, msg)
+    })
+
+    this.tasks = new Tasks(tasksNode, setEditState, this.dataManager, showNotification)
 
     this.tasks.render()
   }
@@ -180,10 +203,11 @@ class App {
 }
 
 class Tasks {
-  constructor(node, setEditState, dataManager) {
+  constructor(node, setEditState, dataManager, showNotification) {
     this.node = node
     this.setEditState = setEditState
     this.dataManager = dataManager
+    this.showNotification = showNotification
   }
 
   render() {
@@ -201,6 +225,9 @@ class Tasks {
         this.taskCollection.classList.add('task-collection')
       }
       this.createTaskItem(addedItem)
+      const status = 'success'
+      const msg = `Task "${addedItem.caption}" added successfully`
+      this.showNotification(status, msg)
     })
 
     this.dataManager.pubsub.subscribe('tasksCleared', () => {
@@ -209,6 +236,7 @@ class Tasks {
         while (this.taskCollection.firstChild) {
           this.taskCollection.firstChild.remove()
         }
+        this.showNotification('success', 'All tasks have been deleted')
       }
     })
 
@@ -254,22 +282,16 @@ class Tasks {
       checkBox.setAttribute('checked', true)
     }
 
-    this.dataManager.pubsub.subscribe('removedTask', (removedItem) => {
-      if (removedItem.id === elementId) {
-        li.remove()
-        if (!this.taskCollection.children.length) {
-          this.taskCollection.classList.remove('task-collection')
-        }
-      }
-    })
-
-    this.dataManager.pubsub.subscribe('taskUpdated', (updatedItem) => {
+    const removeTaskUpdatedSubscription = this.dataManager.pubsub.subscribe('taskUpdated', (updatedItem) => {
       if (updatedItem.id === elementId) {
-        li.childNodes[0].data = updatedItem.caption
+        const oldText = li.childNodes[0].data
+        const newText = updatedItem.caption
+        li.childNodes[0].data = newText
+        this.showNotification('success', `Task changed from ${oldText} to ${newText}`)
       }
     })
 
-    this.dataManager.pubsub.subscribe('checkBoxToggled', (checkedItem) => {
+    const removeCheckBoxToggledSubscription = this.dataManager.pubsub.subscribe('checkBoxToggled', (checkedItem) => {
       if (checkedItem.id === elementId) {
         if (checkedItem.completed) {
           li.classList.add('completed-task')
@@ -280,6 +302,20 @@ class Tasks {
         }
       }
     })
+
+    const removeRemovedTaskSubscription = this.dataManager.pubsub.subscribe('removedTask', (removedItem) => {
+      if (removedItem.id === elementId) {
+        li.remove()
+        removeTaskUpdatedSubscription()
+        removeCheckBoxToggledSubscription()
+        removeRemovedTaskSubscription()
+        this.showNotification('success', `Task "${removedItem.caption}" removed`)
+        if (!this.taskCollection.children.length) {
+          this.taskCollection.classList.remove('task-collection')
+        }
+      }
+    })
+
 
     this.taskCollection.appendChild(li)
   }
