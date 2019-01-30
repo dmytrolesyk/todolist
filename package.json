@@ -2,7 +2,7 @@
   "name": "todolist",
   "version": "1.0.0",
   "description": "",
-  "main": "src/js/app.js",
+  "main": "src/js/client/app.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
     "start": "./node_modules/.bin/webpack-dev-server",
