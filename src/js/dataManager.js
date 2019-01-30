@@ -25,18 +25,14 @@ class DataManager {
       .then(updatedItem => this.pubsub.publish('taskUpdated', updatedItem))
   }
 
-  async checkBoxToggler(taskObj) {
+  checkBoxToggler(taskObj) {
     if (taskObj.completed) {
       taskObj.completed = false
     } else {
       taskObj.completed = true
     }
-    try {
-      const checkedItem = await this.http.put('http://localhost:3000/tasks/', taskObj)
-      this.pubsub.publish('checkBoxToggled', checkedItem)
-    } catch (e) {
-      console.log(e)
-    }
+    this.http.put('http://localhost:3000/tasks/', taskObj)
+      .then(checkedItem => this.pubsub.publish('checkBoxToggled', checkedItem))
   }
 
   clearData() {

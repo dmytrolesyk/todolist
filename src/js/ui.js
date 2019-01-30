@@ -10,7 +10,7 @@ class App {
   render() {
     if (this.node.children.length) {
       while (this.node.firstChild) {
-        this.node.firstChild.remove();
+        this.node.firstChild.remove()
       }
     }
     const wrapper = document.createElement('div')
@@ -45,6 +45,7 @@ class App {
     addTaskSectionTitleHolderH2.textContent = 'Add Tasks'
     addTaskSectionTitleHolder.appendChild(addTaskSectionTitleHolderH2)
 
+    const textInput = document.createElement('input')
     const addTaskHandler = function updateTaskHandler(e) {
       e.preventDefault()
       if (!textInput.value) {
@@ -74,7 +75,6 @@ class App {
     addTaskSectionInputHolder.classList.add('input-holder')
     form.appendChild(addTaskSectionInputHolder)
 
-    const textInput = document.createElement('input')
     textInput.setAttribute('type', 'text')
     textInput.setAttribute('placeholder', 'Input your Task')
     textInput.classList.add('input')
@@ -161,8 +161,8 @@ class App {
     this.dataManager.pubsub.subscribe('tasksCleared', clearTasksHelper)
 
     this.tasks = new Tasks(tasksNode, setEditState, this.dataManager)
-    this.tasks.render()
 
+    this.tasks.render()
   }
 
   static filterTasks(e) {
@@ -188,7 +188,6 @@ class Tasks {
   }
 
   render() {
-
     if (this.node.children.length) {
       while (this.node.firstChild) {
         this.node.firstChild.remove()
@@ -203,8 +202,7 @@ class Tasks {
         this.taskCollection.classList.add('task-collection')
       }
       this.createTaskItem(addedItem)
-    });
-
+    })
 
     this.dataManager.pubsub.subscribe('tasksCleared', () => {
       if (this.taskCollection.children.length) {
@@ -215,11 +213,9 @@ class Tasks {
       }
     })
 
-
     if (!this.dataManager.getData().length) return
 
     this.taskCollection.classList.add('task-collection')
-
 
     this.dataManager.getData().forEach(task => this.createTaskItem(task))
   }
@@ -267,11 +263,13 @@ class Tasks {
         }
       }
     })
+
     this.dataManager.pubsub.subscribe('taskUpdated', (updatedItem) => {
       if (updatedItem.id === elementId) {
         li.childNodes[0].data = updatedItem.caption
       }
     })
+
     this.dataManager.pubsub.subscribe('checkBoxToggled', (checkedItem) => {
       if (checkedItem.id === elementId) {
         if (checkedItem.completed) {

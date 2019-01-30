@@ -6,7 +6,7 @@ const { tasks, Task, generateId } = require('./data.js')
 
 router.get('/tasks', async (ctx) => {
   ctx.body = tasks
-});
+})
 
 router.get('/tasks/:id', async (ctx) => {
   const id = parseInt(ctx.params.id, 10)
@@ -22,25 +22,16 @@ router.post('/tasks', async (ctx) => {
 })
 
 router.delete('/tasks/:id', async (ctx) => {
-  let index
   const id = parseInt(ctx.params.id, 10)
-  tasks.forEach((taskItem, ind) => {
-    if (taskItem.id === id) {
-      index = ind
-    }
-  })
-
+  const index = tasks.findIndex(task => task.id === id)
   const deletedItem = tasks.splice(index, 1)
   ctx.body = deletedItem
 })
 
 router.put('/tasks', async (ctx) => {
   const updatedItem = ctx.request.body
-  tasks.forEach((item, index) => {
-    if (item.id === updatedItem.id) {
-      tasks[index] = updatedItem
-    }
-  })
+  const index = tasks.findIndex(task => task.id === updatedItem.id)
+  tasks[index] = updatedItem
   ctx.body = updatedItem
 })
 

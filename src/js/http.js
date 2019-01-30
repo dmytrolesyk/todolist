@@ -12,8 +12,8 @@ const http = {
       },
       body: JSON.stringify(data),
     })
-    const resData = await response.json();
-    return resData;
+    const resData = await response.json()
+    return resData
   },
   async put(url, data) {
     const response = await fetch(url, {
