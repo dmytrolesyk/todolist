@@ -37,3 +37,5 @@ const http = {
     return resData
   },
 }
+
+export default http

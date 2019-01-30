@@ -11,5 +11,4 @@ app
   .use(router.routes())
   .use(router.allowedMethods())
 
-
 app.listen(3000)

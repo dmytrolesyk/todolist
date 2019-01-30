@@ -1,8 +1,8 @@
 class DataManager {
-  constructor(http) {
+  constructor(http, pubsub) {
     this.initalData = []
     this.http = http
-    this.pubsub = new Pubsub()
+    this.pubsub = pubsub
   }
 
   getData() {
@@ -45,3 +45,5 @@ class DataManager {
       .catch(e => this.pubsub.publish('Error', e))
   }
 }
+
+export default DataManager
