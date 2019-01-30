@@ -2,7 +2,6 @@ class App {
   constructor(node) {
     this.dataManager = new DataManager(http)
     this.node = node
-    this.render = this.render.bind(this)
     this.editState = false
     this.currentTask = null
   }
