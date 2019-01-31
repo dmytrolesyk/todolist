@@ -12,3 +12,7 @@ app
   .use(router.allowedMethods())
 
 app.listen(3000)
+
+// https://medium.freecodecamp.org/introduction-to-mongoose-for-mongodb-d2a7aa593c57
+// https://mongoosejs.com/docs/index.html
+// https://mongoosejs.com/docs/populate.html
