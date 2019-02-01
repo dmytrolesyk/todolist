@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/dmytrolesyk/todolist#readme",
   "dependencies": {
+    "bcrypt": "^3.0.3",
     "koa": "^2.7.0",
     "koa-body": "^4.0.7",
     "koa-cors": "0.0.16",

@@ -49,7 +49,7 @@ class Tasks {
 
   createTaskItem(task) {
     const li = document.createElement('li')
-    const elementId = task.id
+    const elementId = task._id
     li.classList.add('task-item')
     li.textContent = task.caption
 
@@ -83,7 +83,7 @@ class Tasks {
     }
 
     const removeTaskUpdatedSubscription = this.dataManager.pubsub.subscribe('taskUpdated', (updatedItem) => {
-      if (updatedItem.id === elementId) {
+      if (updatedItem._id === elementId) {
         const oldText = li.childNodes[0].data
         const newText = updatedItem.caption
         li.childNodes[0].data = newText
@@ -92,7 +92,7 @@ class Tasks {
     })
 
     const removeCheckBoxToggledSubscription = this.dataManager.pubsub.subscribe('checkBoxToggled', (checkedItem) => {
-      if (checkedItem.id === elementId) {
+      if (checkedItem._id === elementId) {
         if (checkedItem.completed) {
           li.classList.add('completed-task')
           checkBox.setAttribute('checked', true)
@@ -104,7 +104,7 @@ class Tasks {
     })
 
     const removeRemovedTaskSubscription = this.dataManager.pubsub.subscribe('removedTask', (removedItem) => {
-      if (removedItem.id === elementId) {
+      if (removedItem._id === elementId) {
         li.remove()
         removeTaskUpdatedSubscription()
         removeCheckBoxToggledSubscription()
