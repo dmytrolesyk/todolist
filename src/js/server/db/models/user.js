@@ -1,15 +1,10 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
-const saltRounds= 10
+const saltRounds = 10
 
 
 const userSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
   username: {
     type: String,
     required: true,
@@ -19,30 +14,32 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  tasks: {
+  // tasks: {
 
-  },
+  // },
 })
 
-userSchema.pre('save', (next) => {
+userSchema.pre('save', async function hashPassword() {
   if (!this.isModified('password')) return next()
 
-  bcrypt.genSalt(saltRounds, (err, salt) => {
-    if (err) return next(err)
+  const hash = await bcrypt.hash(this.password + 'secret shit', saltRounds)
 
-    bcrypt.hash(this.password, salt, (error, hash) => {
-      if (error) return next(err)
-      this.password = hash
-      next()
-    })
-  })
+  this.password = hash
 })
 
-userSchema.methods.comparePasswords = (candidatePassword, cb) => {
-  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-    if (err) return cb(err)
-    cb(null, isMatch)
-  })
+userSchema.methods.comparePasswords = async function comparePasswords(password) {
+  const isMatch = await bcrypt.compare(password + 'secret shit', this.password)
+  if (isMatch) {
+    console.log('It is a correct password')
+  } else {
+    console.log('The password is incorrect')
+  }
 }
 
+
 module.exports = mongoose.model('User', userSchema)
+
+// https://www.youtube.com/watch?v=7nafaH9SddU&t=2s
+// https://scotch.io/@ossaijad/how-to-do-join-operations-and-create-links-between-mongodb-collection
+// https://solidgeargroup.com/hashing-passwords-nodejs-mongodb-bcrypt
+// https://www.mongodb.com/blog/post/password-authentication-with-mongoose-part-1
