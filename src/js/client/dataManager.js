@@ -9,8 +9,14 @@ class DataManager {
     return this.initalData
   }
 
-  addTaskToData(caption) {
-    this.http.post('http://localhost:3000/tasks/', { caption })
+  login(username, password) {
+    this.http.post('http://localhost:3000/login/', { username, password })
+      .then(user => this.pubsub.publish('loggedInUser', user))
+      .catch(e => this.pubsub.publish('loginFailed', e))
+  }
+
+  addTaskToData(caption, userId) {
+    this.http.post('http://localhost:3000/tasks/', { caption, userId })
       .then(addedTask => this.pubsub.publish('taskAdded', addedTask))
       .catch(e => this.pubsub.publish('Error', e))
   }

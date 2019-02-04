@@ -1,7 +1,3 @@
-import http from './http'
-import pubsub from './pubsub'
-import DataManager from './dataManager'
-
 class Tasks {
   constructor(node, setEditState, dataManager, showNotification) {
     this.node = node
@@ -122,11 +118,12 @@ class Tasks {
 }
 
 class App {
-  constructor(node) {
-    this.dataManager = new DataManager(http, pubsub)
+  constructor(node, dataManager, user) {
+    this.dataManager = dataManager
     this.node = node
     this.editState = false
     this.currentTask = null
+    this.user = user
   }
 
   render() {
@@ -190,7 +187,7 @@ class App {
       if (!textInput.value) {
         showNotification('failure', 'You need to input some value!')
       } else {
-        this.dataManager.addTaskToData(textInput.value)
+        this.dataManager.addTaskToData(textInput.value, this.user)
         textInput.value = ''
       }
     }.bind(this)

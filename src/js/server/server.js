@@ -6,7 +6,7 @@ const router = require('./router.js')
 
 const app = new Koa()
 
-mongoose.connect('mongodb://127.0.0.1:27017/todo')
+mongoose.connect('mongodb://dmytro:database123@ds119160.mlab.com:19160/todolist', { useNewUrlParser: true })
 
 app
   .use(cors())

@@ -9,6 +9,10 @@ const taskSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  author: {
+    type: String,
+    required: true,
+  },
 })
 
 module.exports = mongoose.model('Task', taskSchema)
