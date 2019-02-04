@@ -70,6 +70,7 @@ ul {
     border-radius: 4px;
     margin-top: 60px;
     margin-bottom: 80px;
+    position: relative;
 }
 
 .add-tasks-section, 
@@ -147,8 +148,24 @@ input[type="checkbox"]:checked + .checkbox-label::after {
     opacity: 1;
 }
 
+.btn-sm {
+  border-radius: 4px;
+  font-weight: bold;
+  padding: 10px 15px;
+  text-align: center;
+  outline: none;
+  border-width: 0;
+  color: #fff;
+  cursor: pointer;
+  opacity: 1;
+}
+
 .btn:hover {
-    opacity: 0.8;
+    opacity: 0.7;
+}
+
+.btn-sm:hover {
+  opacity: 0.8;
 }
 
 .btn-violet {
@@ -265,4 +282,14 @@ input[type="checkbox"]:checked + .checkbox-label::after {
   text-decoration: none;
   color: #6a1979; 
   cursor: pointer;
+}
+
+.logout-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.invisible {
+  display: none
 }

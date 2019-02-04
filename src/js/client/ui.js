@@ -156,6 +156,17 @@ class App {
     card.classList.add('card')
     column.appendChild(card)
 
+    const logoutBtn = document.createElement('button')
+    logoutBtn.setAttribute('type', 'button')
+    logoutBtn.className = 'btn-sm btn-violet logout-btn'
+    logoutBtn.textContent = 'Log out'
+    card.appendChild(logoutBtn)
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('userId')
+      localStorage.removeItem('token')
+      this.dataManager.pubsub.publish('loggedOut')
+    })
+
     const addTaskSection = document.createElement('div')
     addTaskSection.classList.add('add-tasks-section')
     card.appendChild(addTaskSection)

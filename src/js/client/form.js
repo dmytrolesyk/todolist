@@ -66,10 +66,15 @@ class Form {
     pwdInput.setAttribute('placeholder', 'Password')
     pwdInputHolder.appendChild(pwdInput)
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      this.dataManager.login(unInput.value, pwdInput.value)
-    })
+    const confirmPwdInputHolder = document.createElement('div')
+    confirmPwdInputHolder.className = 'input-holder invisible'
+    form.appendChild(confirmPwdInputHolder)
+
+    const confirmPwdInput = document.createElement('input')
+    confirmPwdInput.classList.add('input')
+    confirmPwdInput.setAttribute('type', 'password')
+    confirmPwdInput.setAttribute('placeholder', 'Confirm Password')
+    confirmPwdInputHolder.appendChild(confirmPwdInput)
 
     const innerRow = document.createElement('div')
     innerRow.classList.add('row')
@@ -98,6 +103,38 @@ class Form {
     logInButton.value = 'Login'
     logInButton.className = 'btn btn-violet btn-block'
     form.appendChild(logInButton)
+
+    const login = (e) => {
+      e.preventDefault()
+      this.dataManager.login(unInput.value, pwdInput.value)
+    }
+
+    const register = (e) => {
+      e.preventDefault()
+      if (pwdInput.value === confirmPwdInput.value) {
+        this.dataManager.register(unInput.value, pwdInput.value)
+      }
+    }
+
+    form.addEventListener('submit', login)
+
+    const signUpButton = document.createElement('input')
+    signUpButton.setAttribute('type', 'submit')
+    signUpButton.value = 'Sign up'
+    signUpButton.className = 'btn btn-violet btn-block invisible'
+    form.appendChild(signUpButton)
+
+    function setSignUpState() {
+      logInButton.classList.add('invisible')
+      signUpLink.classList.add('invisible')
+      forgotPasswordLink.classList.add('invisible')
+      signUpButton.classList.remove('invisible')
+      confirmPwdInputHolder.classList.remove('invisible')
+      form.removeEventListener('submit', login)
+      form.addEventListener('submit', register)
+    }
+
+    signUpLink.addEventListener('click', setSignUpState)
   }
 }
 

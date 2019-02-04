@@ -15,6 +15,12 @@ class DataManager {
       .catch(e => this.pubsub.publish('loginFailed', e))
   }
 
+  register(username, password) {
+    this.http.post('http://localhost:3000/register/', { username, password })
+      .then(user => this.pubsub.publish('loggedInUser', user))
+      .catch(e => this.pubsub.publish('loginFailed', e))
+  }
+
   addTaskToData(caption, userId) {
     this.http.post('http://localhost:3000/tasks/', { caption, userId })
       .then(addedTask => this.pubsub.publish('taskAdded', addedTask))

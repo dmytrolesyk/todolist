@@ -15,7 +15,6 @@ router.get('/tasks/:user', async (ctx) => {
 
 router.get('/tasks/:id', async (ctx) => {
   const { id } = ctx.params
-  console.log(id)
   const taskItem = await TaskModel.find({ _id: id })
   ctx.body = taskItem
 })
@@ -58,14 +57,20 @@ router.delete('/remove-all-tasks', async (ctx) => {
 
 router.post('/register', async (ctx) => {
   const { username, password } = ctx.request.body
-  const user = new UserModel({
+  const newUser = new UserModel({
     username,
     password,
   })
   const salt = await bcrypt.genSalt(10)
-  const hash = await bcrypt.hash(user.password, salt)
-  user.password = hash
-  ctx.body = await user.save()
+  const hash = await bcrypt.hash(newUser.password, salt)
+  newUser.password = hash
+  const user = await newUser.save()
+  const token = jwt.sign(user.toJSON(), 'secret')
+  ctx.body = {
+    username: user.username,
+    token,
+    userId: user._id,
+  }
 })
 
 router.post('/login', async (ctx) => {
@@ -74,6 +79,7 @@ router.post('/login', async (ctx) => {
     const user = await authenticate(username, password)
     const token = jwt.sign(user.toJSON(), 'secret')
     ctx.body = {
+      username: user.username,
       token,
       userId: user._id,
     }
