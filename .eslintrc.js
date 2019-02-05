@@ -8,7 +8,8 @@ module.exports = {
         node: true,
     },
     "rules": {
-        "semi": [2, 'never']
+        "semi": [2, 'never'],
+        "no-underscore-dangle": 0
     }
 };
 

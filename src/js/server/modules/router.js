@@ -2,9 +2,9 @@ const Router = require('koa-router')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
-const UserModel = require('./db/models/user')
-const TaskModel = require('./db/models/task')
-const authenticate = require('./auth')
+const UserModel = require('../db/models/user')
+const TaskModel = require('../db/models/task')
+const authenticate = require('../auth')
 
 const router = new Router()
 
