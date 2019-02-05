@@ -3,16 +3,16 @@ const User = require('./db/models/user')
 
 function authenticate(username, password) {
   return new Promise(async (resolve, reject) => {
-    try {
-      const user = await User.findOne({ username })
+    const user = await User.findOne({ username })
+    if (!user) reject(new Error('User not found'))
+    else {
       bcrypt.compare(password, user.password, (err, isMatch) => {
-        if (err) reject(err)
         if (isMatch) {
           resolve(user)
+        } else {
+          reject(new Error('Password is incorrect'))
         }
       })
-    } catch (error) {
-      reject(error)
     }
   })
 }

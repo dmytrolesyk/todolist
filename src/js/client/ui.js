@@ -156,14 +156,18 @@ class App {
     card.classList.add('card')
     column.appendChild(card)
 
+    const greeting = document.createElement('div')
+    greeting.textContent = `Hello, ${this.user.username}`
+    greeting.classList.add('greeting')
+    card.appendChild(greeting)
+
     const logoutBtn = document.createElement('button')
     logoutBtn.setAttribute('type', 'button')
     logoutBtn.className = 'btn-sm btn-violet logout-btn'
     logoutBtn.textContent = 'Log out'
     card.appendChild(logoutBtn)
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('userId')
-      localStorage.removeItem('token')
+      localStorage.removeItem('user')
       this.dataManager.pubsub.publish('loggedOut')
     })
 
@@ -193,12 +197,12 @@ class App {
     }
 
     const textInput = document.createElement('input')
-    const addTaskHandler = function updateTaskHandler(e) {
+    const addTaskHandler = function addTaskHandler(e) {
       e.preventDefault()
       if (!textInput.value) {
         showNotification('failure', 'You need to input some value!')
       } else {
-        this.dataManager.addTaskToData(textInput.value, this.user)
+        this.dataManager.addTaskToData(textInput.value, this.user.userId)
         textInput.value = ''
       }
     }.bind(this)

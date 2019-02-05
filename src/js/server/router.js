@@ -57,34 +57,51 @@ router.delete('/remove-all-tasks', async (ctx) => {
 
 router.post('/register', async (ctx) => {
   const { username, password } = ctx.request.body
-  const newUser = new UserModel({
-    username,
-    password,
-  })
-  const salt = await bcrypt.genSalt(10)
-  const hash = await bcrypt.hash(newUser.password, salt)
-  newUser.password = hash
-  const user = await newUser.save()
-  const token = jwt.sign(user.toJSON(), 'secret')
-  ctx.body = {
-    username: user.username,
-    token,
-    userId: user._id,
+  const existingUser = await UserModel.find({ username })
+  if (existingUser) {
+    ctx.body = {
+      success: false,
+      data: {},
+    }
+  } else {
+    const newUser = new UserModel({
+      username,
+      password,
+    })
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(newUser.password, salt)
+    newUser.password = hash
+    const user = await newUser.save()
+    const token = jwt.sign(user.toJSON(), 'secret')
+    ctx.body = {
+      success: true,
+      data: {
+        username: user.username,
+        token,
+        userId: user._id,
+      },
+    }
   }
 })
 
 router.post('/login', async (ctx) => {
-  const { username, password } = ctx.request.body
   try {
+    const { username, password } = ctx.request.body
     const user = await authenticate(username, password)
     const token = jwt.sign(user.toJSON(), 'secret')
     ctx.body = {
-      username: user.username,
-      token,
-      userId: user._id,
+      success: true,
+      data: {
+        username: user.username,
+        token,
+        userId: user._id,
+      },
     }
   } catch (error) {
-    throw error
+    ctx.body = {
+      success: false,
+      data: {},
+    }
   }
 })
 

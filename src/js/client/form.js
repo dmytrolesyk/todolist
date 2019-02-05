@@ -18,6 +18,23 @@ class Form {
     wrapper.classList.add('wrapper')
     this.node.appendChild(wrapper)
 
+    const notificationHolder = document.createElement('div')
+    notificationHolder.classList.add('notification-holder')
+    wrapper.appendChild(notificationHolder)
+
+    function showNotification(status, msg) {
+      const notification = document.createElement('div')
+      notification.textContent = msg
+      notification.classList.add('notification')
+      notification.classList.add(status === 'success' ? 'notification-success' : 'notification-failure')
+      if (notificationHolder.children.length) {
+        notificationHolder.insertBefore(notification, notificationHolder.firstElementChild)
+      } else {
+        notificationHolder.appendChild(notification)
+      }
+      setTimeout(() => notification.remove(), 5000)
+    }
+
     const container = document.createElement('div')
     container.classList.add('container')
     wrapper.appendChild(container)
@@ -106,13 +123,34 @@ class Form {
 
     const login = (e) => {
       e.preventDefault()
-      this.dataManager.login(unInput.value, pwdInput.value)
+      if (!unInput.value || !pwdInput.value) {
+        showNotification('failure', 'Input username and password')
+        unInput.value = ''
+        pwdInput.value = ''
+      } else {
+        this.dataManager.login(unInput.value, pwdInput.value)
+      }
     }
+
+    this.dataManager.pubsub.subscribe('loginFailed', () => {
+      showNotification('failure', 'Username or password is incorrect')
+      unInput.value = ''
+      pwdInput.value = ''
+    })
+
+    this.dataManager.pubsub.subscribe('usernameExists', () => {
+      showNotification('failure', 'This username is occuppied')
+      unInput.value = ''
+      pwdInput.value = ''
+      confirmPwdInput.value = ''
+    })
 
     const register = (e) => {
       e.preventDefault()
       if (pwdInput.value === confirmPwdInput.value) {
         this.dataManager.register(unInput.value, pwdInput.value)
+      } else {
+        showNotification('failure', "Password doesn't match")
       }
     }
 
@@ -125,6 +163,9 @@ class Form {
     form.appendChild(signUpButton)
 
     function setSignUpState() {
+      formTitle.textContent = 'Create an account'
+      unInput.value = ''
+      pwdInput.value = ''
       logInButton.classList.add('invisible')
       signUpLink.classList.add('invisible')
       forgotPasswordLink.classList.add('invisible')

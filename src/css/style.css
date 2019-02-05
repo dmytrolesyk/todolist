@@ -261,6 +261,19 @@ input[type="checkbox"]:checked + .checkbox-label::after {
     content: "\e906";
   }
 
+  .logout-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .greeting {
+    position: absolute;
+    left: 10px;
+    color: #6a1979;
+    top: 10px;
+  }
+
 
   /* Login/Signup components styles */
 
@@ -282,12 +295,6 @@ input[type="checkbox"]:checked + .checkbox-label::after {
   text-decoration: none;
   color: #6a1979; 
   cursor: pointer;
-}
-
-.logout-btn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
 }
 
 .invisible {

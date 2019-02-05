@@ -11,13 +11,25 @@ class DataManager {
 
   login(username, password) {
     this.http.post('http://localhost:3000/login/', { username, password })
-      .then(user => this.pubsub.publish('loggedInUser', user))
+      .then((user) => {
+        if (user.success) {
+          this.pubsub.publish('loggedInUser', user.data)
+        } else {
+          this.pubsub.publish('loginFailed')
+        }
+      })
       .catch(e => this.pubsub.publish('loginFailed', e))
   }
 
   register(username, password) {
     this.http.post('http://localhost:3000/register/', { username, password })
-      .then(user => this.pubsub.publish('loggedInUser', user))
+      .then((user) => {
+        if (user.success) {
+          this.pubsub.publish('loggedInUser', user.data)
+        } else {
+          this.pubsub.publish('usernameExists')
+        }
+      })
       .catch(e => this.pubsub.publish('loginFailed', e))
   }
 

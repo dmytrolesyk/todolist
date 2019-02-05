@@ -8,15 +8,14 @@ const dataManager = new DataManager(http, pubsub)
 
 const init = () => {
   const rootNode = document.getElementById('root')
-  if (!localStorage.getItem('userId')) {
+  if (!localStorage.getItem('user')) {
     const form = new Form(rootNode, dataManager)
 
     form.render()
 
     pubsub.subscribe('loggedInUser', (user) => {
-      localStorage.setItem('token', user.token)
-      localStorage.setItem('userId', user.userId)
-      const app = new App(rootNode, dataManager, user.userId)
+      localStorage.setItem('user', JSON.stringify(user))
+      const app = new App(rootNode, dataManager, user)
       dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`)
         .then((tasks) => {
           dataManager.initalData = []
@@ -25,9 +24,9 @@ const init = () => {
         })
     })
   } else {
-    const userId = localStorage.getItem('userId')
-    const app = new App(rootNode, dataManager, userId)
-    dataManager.http.get(`http://localhost:3000/tasks/${userId}`)
+    const user = JSON.parse(localStorage.getItem('user'))
+    const app = new App(rootNode, dataManager, user)
+    dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`)
       .then((tasks) => {
         dataManager.initalData = []
         dataManager.initalData.push(...tasks)
