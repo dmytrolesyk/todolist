@@ -5,7 +5,7 @@
   "main": "src/js/client/app.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack",
-    "start": "./node_modules/.bin/webpack-dev-server",
+    "start": "./node_modules/.bin/webpack-dev-server --output-filename ./dist/app.bundle.js",
     "start-server": "nodemon src/js/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,6 +24,7 @@
     "jsonwebtoken": "^8.4.0",
     "koa": "^2.7.0",
     "koa-body": "^4.0.7",
+    "koa-jwt": "^3.5.1",
     "koa-router": "^7.4.0",
     "koa2-cors": "^2.0.6",
     "mongoose": "^5.4.8"

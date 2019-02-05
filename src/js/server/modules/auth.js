@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const User = require('./db/models/user')
+const User = require('../db/models/user')
 
 function authenticate(username, password) {
   return new Promise(async (resolve, reject) => {

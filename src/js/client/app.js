@@ -16,7 +16,7 @@ const init = () => {
     pubsub.subscribe('loggedInUser', (user) => {
       localStorage.setItem('user', JSON.stringify(user))
       const app = new App(rootNode, dataManager, user)
-      dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`)
+      dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`, `Bearer ${user.token}`)
         .then((tasks) => {
           dataManager.initalData = []
           dataManager.initalData.push(...tasks)
@@ -26,7 +26,7 @@ const init = () => {
   } else {
     const user = JSON.parse(localStorage.getItem('user'))
     const app = new App(rootNode, dataManager, user)
-    dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`)
+    dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`, `Bearer ${user.token}`)
       .then((tasks) => {
         dataManager.initalData = []
         dataManager.initalData.push(...tasks)

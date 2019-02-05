@@ -16,7 +16,6 @@ mongoose.connect('mongodb://dmytro:database123@ds119160.mlab.com:19160/todolist'
 app
   .use(cors())
   .use(koaBody())
-  // .use(koaJWT({  }))
   .use(router.routes())
   .use(router.allowedMethods())
 

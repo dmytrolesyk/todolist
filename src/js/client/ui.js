@@ -1,9 +1,10 @@
 class Tasks {
-  constructor(node, setEditState, dataManager, showNotification) {
+  constructor(node, setEditState, dataManager, showNotification, token) {
     this.node = node
     this.setEditState = setEditState
     this.dataManager = dataManager
     this.showNotification = showNotification
+    this.token = token
   }
 
   render() {
@@ -52,7 +53,7 @@ class Tasks {
     const deleteItem = document.createElement('span')
     deleteItem.innerHTML = '&times'
     deleteItem.classList.add('delete-item-icon')
-    deleteItem.addEventListener('click', () => this.dataManager.removeDataItem(elementId))
+    deleteItem.addEventListener('click', () => this.dataManager.removeDataItem(elementId, this.token))
     li.appendChild(deleteItem)
 
     const editButton = document.createElement('a')
@@ -66,7 +67,7 @@ class Tasks {
     const checkBox = document.createElement('input')
     checkBox.type = 'checkbox'
     checkBox.id = `checkbox-${elementId}`
-    checkBox.addEventListener('click', () => this.dataManager.checkBoxToggler(task))
+    checkBox.addEventListener('click', () => this.dataManager.checkBoxToggler(task, this.token))
     li.appendChild(checkBox)
 
     const checkBoxLabel = document.createElement('label')
@@ -124,6 +125,7 @@ class App {
     this.editState = false
     this.currentTask = null
     this.user = user
+    this.token = `Bearer ${this.user.token}`
   }
 
   render() {
@@ -202,7 +204,7 @@ class App {
       if (!textInput.value) {
         showNotification('failure', 'You need to input some value!')
       } else {
-        this.dataManager.addTaskToData(textInput.value, this.user.userId)
+        this.dataManager.addTaskToData(textInput.value, this.user.userId, this.token)
         textInput.value = ''
       }
     }.bind(this)
@@ -213,7 +215,7 @@ class App {
         showNotification('failure', 'You need to input some value!')
       } else {
         const itemToUpdate = this.currentTask
-        this.dataManager.updateTask(textInput.value, itemToUpdate)
+        this.dataManager.updateTask(textInput.value, itemToUpdate, this.token)
         removeEditState()
       }
     }.bind(this)
@@ -267,7 +269,7 @@ class App {
     clearTasksButton.className = 'btn btn-black clear-tasks'
     clearTasksButton.textContent = 'Clear Tasks'
     clearTasksButton.addEventListener('click', () => {
-      this.dataManager.clearData()
+      this.dataManager.clearData(this.token)
     })
     manageTaskSection.appendChild(clearTasksButton)
 
@@ -317,7 +319,7 @@ class App {
       showNotification(status, msg)
     })
 
-    this.tasks = new Tasks(tasksNode, setEditState, this.dataManager, showNotification)
+    this.tasks = new Tasks(tasksNode, setEditState, this.dataManager, showNotification, this.token)
 
     this.tasks.render()
   }

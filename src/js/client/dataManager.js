@@ -30,41 +30,41 @@ class DataManager {
           this.pubsub.publish('usernameExists')
         }
       })
-      .catch(e => this.pubsub.publish('loginFailed', e))
+      // .catch(e => this.pubsub.publish('loginFailed', e))
   }
 
-  addTaskToData(caption, userId) {
-    this.http.post('http://localhost:3000/tasks/', { caption, userId })
+  addTaskToData(caption, userId, token) {
+    this.http.post('http://localhost:3000/tasks/', { caption, userId }, token)
       .then(addedTask => this.pubsub.publish('taskAdded', addedTask))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  removeDataItem(id) {
-    this.http.delete(`http://localhost:3000/tasks/${id}`)
+  removeDataItem(id, token) {
+    this.http.delete(`http://localhost:3000/tasks/${id}`, token)
       .then(removedItem => this.pubsub.publish('removedTask', removedItem))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  updateTask(input, taskObj) {
+  updateTask(input, taskObj, token) {
     taskObj.caption = input
-    this.http.put('http://localhost:3000/tasks/', taskObj)
+    this.http.put('http://localhost:3000/tasks/', taskObj, token)
       .then(updatedItem => this.pubsub.publish('taskUpdated', updatedItem))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  checkBoxToggler(taskObj) {
+  checkBoxToggler(taskObj, token) {
     if (taskObj.completed) {
       taskObj.completed = false
     } else {
       taskObj.completed = true
     }
-    this.http.put('http://localhost:3000/tasks/', taskObj)
+    this.http.put('http://localhost:3000/tasks/', taskObj, token)
       .then(checkedItem => this.pubsub.publish('checkBoxToggled', checkedItem))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  clearData() {
-    this.http.delete('http://localhost:3000/remove-all-tasks')
+  clearData(token) {
+    this.http.delete('http://localhost:3000/remove-all-tasks', token)
       .then(this.pubsub.publish('tasksCleared'))
       .catch(e => this.pubsub.publish('Error', e))
   }
