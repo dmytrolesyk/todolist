@@ -71,20 +71,18 @@
 //   }
 //   expect(mockFetch.mock.calls[0]).toEqual([mockUrl, secondArgument])
 // })
-
-const makeHttpClient = require('./http')
+const { makeHttpClient } = require('../http')
 
 let httpClient
 const mockFetch = jest.fn()
 
-
-beforeEach(() => {
-  httpClient = makeHttpClient(mockFetch)
-  mockFetch.mockReset()
-})
-
 describe('HTTP module', () => {
   describe('GET method', () => {
+    beforeEach(() => {
+      httpClient = makeHttpClient(mockFetch)
+      mockFetch.mockReset()
+    })
+
     test('calls get with correct result', async () => {
       const mockUrl = 'testurl'
       const mockToken = 'testoken'

@@ -1,4 +1,4 @@
-class Tasks {
+export class Tasks {
   constructor(node, setEditState, dataManager, showNotification, token) {
     this.node = node
     this.setEditState = setEditState

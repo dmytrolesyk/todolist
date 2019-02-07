@@ -1,4 +1,4 @@
-const http = {
+export const makeHttpClient = fetch => ({
   async get(url, token) {
     const response = await fetch(url, {
       headers: {
@@ -43,6 +43,6 @@ const http = {
     const resData = await response.json()
     return resData
   },
-}
+})
 
-export default http
+export default makeHttpClient(fetch)
