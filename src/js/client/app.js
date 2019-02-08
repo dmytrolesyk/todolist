@@ -2,7 +2,7 @@ import http from './http'
 import pubsub from './pubsub'
 import DataManager from './dataManager'
 import Form from './form'
-import App from './ui'
+import App from './components/appcomp'
 
 const dataManager = new DataManager(http, pubsub)
 
