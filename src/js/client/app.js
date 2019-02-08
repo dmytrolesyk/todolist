@@ -18,8 +18,8 @@ const init = () => {
       const app = new App(rootNode, dataManager, user)
       dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`, `Bearer ${user.token}`)
         .then((tasks) => {
-          dataManager.initalData = []
-          dataManager.initalData.push(...tasks)
+          dataManager.initialData = []
+          dataManager.initialData.push(...tasks)
           app.render()
         })
     })
@@ -28,8 +28,8 @@ const init = () => {
     const app = new App(rootNode, dataManager, user)
     dataManager.http.get(`http://localhost:3000/tasks/${user.userId}`, `Bearer ${user.token}`)
       .then((tasks) => {
-        dataManager.initalData = []
-        dataManager.initalData.push(...tasks)
+        dataManager.initialData = []
+        dataManager.initialData.push(...tasks)
         app.render()
       })
   }

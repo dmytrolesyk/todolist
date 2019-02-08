@@ -1,15 +1,26 @@
+/** @flow */
+
+import type { HTTPClient } from './http'
+import { Pubsub } from './pubsub'
+
 class DataManager {
-  constructor(http, pubsub) {
-    this.initalData = []
+  initialData: Array<{ _id: string, caption: string, }>
+
+  http: HTTPClient
+
+  pubsub: Pubsub
+
+  constructor(http: HTTPClient, pubsub: Pubsub) {
+    this.initialData = []
     this.http = http
     this.pubsub = pubsub
   }
 
   getData() {
-    return this.initalData
+    return this.initialData
   }
 
-  login(username, password) {
+  login(username: string, password: string): void {
     this.http.post('http://localhost:3000/login/', { username, password })
       .then((user) => {
         if (user.success) {
@@ -21,7 +32,7 @@ class DataManager {
       .catch(e => this.pubsub.publish('loginFailed', e))
   }
 
-  register(username, password) {
+  register(username: string, password: string): void {
     this.http.post('http://localhost:3000/register/', { username, password })
       .then((user) => {
         if (user.success) {
@@ -33,26 +44,26 @@ class DataManager {
       // .catch(e => this.pubsub.publish('loginFailed', e))
   }
 
-  addTaskToData(caption, userId, token) {
+  addTaskToData(caption: string, userId: string, token: string): void {
     this.http.post('http://localhost:3000/tasks/', { caption, userId }, token)
       .then(addedTask => this.pubsub.publish('taskAdded', addedTask))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  removeDataItem(id, token) {
+  removeDataItem(id: string, token: string): void {
     this.http.delete(`http://localhost:3000/tasks/${id}`, token)
       .then(removedItem => this.pubsub.publish('removedTask', removedItem))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  updateTask(input, taskObj, token) {
+  updateTask(input: string, taskObj: { _id: string, caption: string, completed: boolean}, token: string): void {
     taskObj.caption = input
     this.http.put('http://localhost:3000/tasks/', taskObj, token)
       .then(updatedItem => this.pubsub.publish('taskUpdated', updatedItem))
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  checkBoxToggler(taskObj, token) {
+  checkBoxToggler(taskObj: { _id: string, caption: string, completed: boolean}, token: string): void {
     if (taskObj.completed) {
       taskObj.completed = false
     } else {
@@ -63,7 +74,7 @@ class DataManager {
       .catch(e => this.pubsub.publish('Error', e))
   }
 
-  clearData(token) {
+  clearData(token: string): void {
     this.http.delete('http://localhost:3000/remove-all-tasks', token)
       .then(this.pubsub.publish('tasksCleared'))
       .catch(e => this.pubsub.publish('Error', e))

@@ -1,9 +1,14 @@
-class Pubsub {
+/** @flow */
+
+
+export class Pubsub {
+  events: {[string]: Array<(any) => any>} = {}
+
   constructor() {
     this.events = {}
   }
 
-  subscribe(action, listener) {
+  subscribe(action: string, listener: (any) => void): ?() => void {
     if (!Object.prototype.hasOwnProperty.call(this.events, action)) {
       this.events[action] = []
     }
@@ -13,7 +18,7 @@ class Pubsub {
     }.bind(this)
   }
 
-  publish(action, payload) {
+  publish(action: string, payload: any) {
     if (!Object.prototype.hasOwnProperty.call(this.events, action)) return
 
     this.events[action].forEach((listener) => {

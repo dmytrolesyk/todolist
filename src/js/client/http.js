@@ -1,4 +1,14 @@
-export const makeHttpClient = fetch => ({
+/** @flow */
+
+
+export type HTTPClient = {
+  get: (url: string, token?: string) => Promise<any>,
+  post: (url: string, data: {}, token?: string) => Promise<any>,
+  put: (url: string, data: {}, token?: string) => Promise<any>,
+  delete: (url: string, token?: string) => Promise<any>,
+}
+
+export const makeHttpClient = (fetch: (any, any) => Promise<any>): HTTPClient => ({
   async get(url, token) {
     const response = await fetch(url, {
       headers: {
